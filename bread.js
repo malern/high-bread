@@ -1,5 +1,3 @@
-import {CanvasRenderer} from "./CanvasRenderer.js"
-
 var engine = null;
 var clickPoint;
 var canvasRenderer;
@@ -106,6 +104,53 @@ var grappleConstraints = [];
 document.addEventListener('contextmenu', event => event.preventDefault());
 
 
+function startLevel() {
+	Matter.World.clear(engine.world);
+
+	var test = Matter.Bodies.rectangle(500, 200, 150, 150, {
+		render: {
+			strokeStyle: '#ffffff',
+			sprite: {
+				texture: 'bread.png'
+			}
+		},
+		//collisionFilter: { mask: 2 },
+		isBread: true,
+	});
+
+	// create two boxes and a ground
+	var boxA = Matter.Bodies.rectangle(400, 200, 150, 150, {
+		render: {
+			sprite: {texture: 'bread.png'},
+		},
+	});
+	var boxB = Matter.Bodies.rectangle(450, 50, 80, 80);
+	var ground = Matter.Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+	// add all of the bodies to the world
+	Matter.World.add(engine.world, [
+		test,
+		boxA,
+		boxB,
+		// little boxes
+		Matter.Bodies.rectangle(450, 50, 80, 80),
+		Matter.Bodies.rectangle(450, 50, 80, 80),
+		Matter.Bodies.rectangle(450, 50, 80, 80),
+
+		// ground
+		Matter.Bodies.rectangle(400, 610, 810, 60, { isStatic: true }),
+		Matter.Bodies.rectangle(1600, 610, 2000, 100, { isStatic: true }),
+		// walls
+		Matter.Bodies.rectangle(0, 0, 100, 4000, { isStatic: true }),
+		Matter.Bodies.rectangle(2500, 0, 100, 4000, { isStatic: true }),
+
+		// platform
+		Matter.Bodies.rectangle(1000, 0, 410, 100, { isStatic: true }),
+
+	]);
+}
+
+
 window.addEventListener('load', function() {
 
 
@@ -177,78 +222,31 @@ console.log('mousedown', e.button);
 
 	window.addEventListener('wheel', (e) => {
 		console.log(e);
-			var scaleFactor = 1.1;
-			var clicks = (e.deltaY / 40) * -1;
-			var scaleAmount = Math.pow(scaleFactor, clicks);
-			canvasRenderer.scale *= scaleAmount;
-
+		var scaleFactor = 1.1;
+		var clicks = (e.deltaY / 40) * -1;
+		var scaleAmount = Math.pow(scaleFactor, clicks);
+		canvasRenderer.scale *= scaleAmount;
 	});
 
-//Example.sprites(); return;
-	// module aliases
-	var Engine = Matter.Engine,
-		Render = Matter.Render,
-		Runner = Matter.Runner,
-		Composites = Matter.Composites,
-		Common = Matter.Common,
-		MouseConstraint = Matter.MouseConstraint,
-		Mouse = Matter.Mouse,
-		World = Matter.World,
-		Events = Matter.Events,
-		Bodies = Matter.Bodies;
+	window.addEventListener('keypress', (event) => {
+		switch(event.key) {
+			// restart
+			case 'r':
+				startLevel();
+			break;
+		}
+	});
 
 	// create an engine
-	engine = Engine.create();
-	window.engine = engine;
-	window.canvasRenderer = canvasRenderer;
+	engine = Matter.Engine.create();
 
-	var test = Bodies.rectangle(500, 200, 150, 150, {
-		render: {
-			strokeStyle: '#ffffff',
-			sprite: {
-				texture: 'bread.png'
-			}
-		},
-		//collisionFilter: { mask: 2 },
-		isBread: true,
-	});
-
-	// create two boxes and a ground
-	var boxA = Bodies.rectangle(400, 200, 150, 150, {
-		render: {
-			sprite: {texture: 'bread.png'},
-		},
-	});
-	var boxB = Bodies.rectangle(450, 50, 80, 80);
-	var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-
-	// add all of the bodies to the world
-	World.add(engine.world, [
-		test,
-		boxA,
-		boxB,
-		// little boxes
-		Bodies.rectangle(450, 50, 80, 80),
-		Bodies.rectangle(450, 50, 80, 80),
-		Bodies.rectangle(450, 50, 80, 80),
-
-		// ground
-		Bodies.rectangle(400, 610, 810, 60, { isStatic: true }),
-		Bodies.rectangle(1600, 610, 2000, 100, { isStatic: true }),
-		// walls
-		Bodies.rectangle(0, 0, 100, 4000, { isStatic: true }),
-		Bodies.rectangle(2500, 0, 100, 4000, { isStatic: true }),
-
-		// platform
-		Bodies.rectangle(1000, 0, 410, 100, { isStatic: true }),
-
-	]);
+	startLevel();
 
 
 /*
 
 	// create a renderer
-	var render = Render.create({
+	var render = Matter.Render.create({
 		element: document.body,
 		engine: engine,
 		options: {
@@ -262,8 +260,8 @@ console.log('mousedown', e.button);
 	});
 
 	// add mouse control
-	var mouse = Mouse.create(render.canvas),
-		mouseConstraint = MouseConstraint.create(engine, {
+	var mouse = Matter.Mouse.create(render.canvas),
+		mouseConstraint = Matter.MouseConstraint.create(engine, {
 			mouse: mouse,
 			constraint: {
 				stiffness: 0.2,
@@ -273,7 +271,7 @@ console.log('mousedown', e.button);
 			}
 		});
 
-	World.add(engine.world, mouseConstraint);
+	Matter.World.add(engine.world, mouseConstraint);
 
 	// keep the mouse in sync with rendering
 	render.mouse = mouse;
@@ -284,7 +282,7 @@ Events.on(render, "beforeRender", () => {
 */
 
 	// run the engine
-	Engine.run(engine);
+	Matter.Engine.run(engine);
 
 	canvasRenderer.run(engine);
 	// run the renderer

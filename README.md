@@ -9,4 +9,8 @@ You are a duel wielding grappling hook slice of bread. Get yourself as high as p
 
 Click and hold mouse button to fire grappling hook. You have 2 grappling hooks that can be activated with the left and right mouse buttons.
 
+Press **r** to restart level.
+
+Mouse wheel to zoom in and out.
+
 # [Click here to play this lovelyness](https://malern.github.io/high-bread/)
