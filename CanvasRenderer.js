@@ -49,24 +49,28 @@ class CanvasRenderer {
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 
+		for (var body of world.bodies) {
+			if (body.isPlayer) {
+				var playerBody = body;
+			}
+		}
 
-var trackBody = world.bodies[0];
-
-		var translateX = (this.canvas.width / 2) - (trackBody.position.x * this.scale);
-
+		// center the camera on the player
+		var translateX = (this.canvas.width / 2) - (playerBody.position.x * this.scale);
+		var translateY = (this.canvas.height / 2) - (playerBody.position.y * this.scale);
+/*
+		// dont move too far outside the level area
 		if (translateX < 600) {
 			translateX = 600;
 		}
-
-		this.worldMatrix = createMatrix(translateX, (this.canvas.height / 2) - (trackBody.position.y * this.scale), this.scale, 0);
-
-
+*/
+		this.worldMatrix = createMatrix(translateX, translateY, this.scale, 0);
 		this.ctx.setTransform(this.worldMatrix.a, this.worldMatrix.b, this.worldMatrix.c, this.worldMatrix.d, this.worldMatrix.e, this.worldMatrix.f);
 
 		if (this.breadImg.isLoaded) {
 			this.ctx.save();
-			this.ctx.translate(world.bodies[0].position.x, world.bodies[0].position.y);
-			this.ctx.rotate(world.bodies[0].angle);
+			this.ctx.translate(playerBody.position.x, playerBody.position.y);
+			this.ctx.rotate(playerBody.angle);
 			this.ctx.drawImage(this.breadImg, -(this.breadImg.width / 2), -(this.breadImg.height / 2));
 			this.ctx.restore();
 		}
@@ -134,7 +138,7 @@ this.engine = engine;
 			this.worldMatrix.a / cross
 		];
 
-		var xx = point.x - this.worldMatrix.e;	 // remove the translation 
+		var xx = point.x - this.worldMatrix.e;	 // remove the translation
 		var yy = point.y - this.worldMatrix.f;	 // by subtracting the origin
 		// return the point {x:?,y:?} by multiplying xx,yy by the inverse matrix
 		return {

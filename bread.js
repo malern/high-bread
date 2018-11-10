@@ -1,7 +1,7 @@
 var engine = null;
 var clickPoint;
 var canvasRenderer;
-
+var playerBody;
 
 // https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
 function isIntersecting(p1, p2, p3, p4) {
@@ -56,7 +56,7 @@ function findClosestIntersect(startPoint, endPoint, bodies) {
 
 	// find all the segments that intersect
 	for (var body of bodies) {
-		if (body.isBread) { continue; }
+		if (body.isPlayer) { continue; }
 		for (var i = 0; i < body.vertices.length - 1; i++) {
 			if (isIntersecting(startPoint, endPoint, body.vertices[i], body.vertices[i+1])) {
 				intersectingSegments.push({
@@ -107,7 +107,7 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 function startLevel() {
 	Matter.World.clear(engine.world);
 
-	var test = Matter.Bodies.rectangle(500, 200, 150, 150, {
+	playerBody = Matter.Bodies.rectangle(500, 200, 150, 150, {
 		render: {
 			strokeStyle: '#ffffff',
 			sprite: {
@@ -115,24 +115,19 @@ function startLevel() {
 			}
 		},
 		//collisionFilter: { mask: 2 },
-		isBread: true,
+		isPlayer: true,
 	});
 
-	// create two boxes and a ground
-	var boxA = Matter.Bodies.rectangle(400, 200, 150, 150, {
-		render: {
-			sprite: {texture: 'bread.png'},
-		},
-	});
-	var boxB = Matter.Bodies.rectangle(450, 50, 80, 80);
-	var ground = Matter.Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
 	// add all of the bodies to the world
 	Matter.World.add(engine.world, [
-		test,
-		boxA,
-		boxB,
+		playerBody,
+
+		// big box
+		Matter.Bodies.rectangle(400, 200, 150, 150),
+
 		// little boxes
+		Matter.Bodies.rectangle(450, 50, 80, 80),
 		Matter.Bodies.rectangle(450, 50, 80, 80),
 		Matter.Bodies.rectangle(450, 50, 80, 80),
 		Matter.Bodies.rectangle(450, 50, 80, 80),
@@ -170,9 +165,9 @@ console.log('mousedown', e.button);
 		if (e.button == 0) {
 			// jump
 			Matter.Body.applyForce(
-				engine.world.bodies[0],
-				engine.world.bodies[0].position,
-				Matter.Vector.normalise(Matter.Vector.sub(clickPoint, engine.world.bodies[0].position)),
+				playerBody,
+				playerBody.position,
+				Matter.Vector.normalise(Matter.Vector.sub(clickPoint, playerBody.position)),
 			);
 		}
 */
@@ -180,9 +175,9 @@ console.log('mousedown', e.button);
 			var id = e.button;
 
 			// grapple
-			var endRopePoint = Matter.Vector.add(Matter.Vector.mult(Matter.Vector.normalise(Matter.Vector.sub(clickPoint, engine.world.bodies[0].position)), 5000), engine.world.bodies[0].position);
+			var endRopePoint = Matter.Vector.add(Matter.Vector.mult(Matter.Vector.normalise(Matter.Vector.sub(clickPoint, playerBody.position)), 5000), playerBody.position);
 
-			var closestIntersect = findClosestIntersect(engine.world.bodies[0].position, endRopePoint, engine.world.bodies);
+			var closestIntersect = findClosestIntersect(playerBody.position, endRopePoint, engine.world.bodies);
 			canvasRenderer.closestIntersect = closestIntersect;
 			console.log(closestIntersect);
 
@@ -193,7 +188,7 @@ console.log('mousedown', e.button);
 
 			if (closestIntersect) {
 				grappleConstraints[id] = Matter.Constraint.create({
-					bodyA: engine.world.bodies[0],
+					bodyA: playerBody,
 					pointA: { x: 0, y: 0 },
 					bodyB: closestIntersect.body,
 					pointB: closestIntersect.bodyOffset,
