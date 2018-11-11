@@ -51,7 +51,7 @@ class Mechanics {
 
 	grappleTo(grappleId, targetPoint) {
 		// grapple
-		var endRopePoint = Matter.Vector.add(Matter.Vector.mult(Matter.Vector.normalise(Matter.Vector.sub(clickPoint, this.playerBody.position)), 5000), this.playerBody.position);
+		var endRopePoint = Matter.Vector.add(Matter.Vector.mult(Matter.Vector.normalise(Matter.Vector.sub(targetPoint, this.playerBody.position)), 5000), this.playerBody.position);
 
 		var closestIntersect = findClosestIntersect(this.playerBody.position, endRopePoint, this.engine.world.bodies);
 		canvasRenderer.closestIntersect = closestIntersect;
@@ -83,6 +83,10 @@ class Mechanics {
 			Matter.World.remove(this.engine.world, this.grappleConstraints[grappleId]);
 			this.grappleConstraints[grappleId] = null;
 		}
+	}
+
+	grappleExists(grappleId) {
+		return this.grappleConstraints[grappleId];
 	}
 }
 

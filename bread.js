@@ -63,6 +63,39 @@ window.addEventListener('load', function() {
 
 	mechanics = new Mechanics();
 
+	var grappleControllerActivated = [];
+
+	function handleGamepadAxis(grappleId, axesX, axesY) {
+		if (Math.abs(axesX) > 0.5 || Math.abs(axesY) > 0.5) {
+			if (mechanics.grappleExists(grappleId)) { return; }
+			grappleControllerActivated[grappleId] = true;
+			mechanics.grappleTo(grappleId, {
+				x: mechanics.playerBody.position.x + axesX,
+				y: mechanics.playerBody.position.y + axesY,
+			});
+		}
+		else {
+			if (grappleControllerActivated[grappleId]) {
+				mechanics.grappleRemove(grappleId);
+				grappleControllerActivated[grappleId] = false;
+			}
+		}
+	}
+
+	Matter.Events.on(mechanics.engine, 'beforeUpdate', function() {
+		if (!'getGamepads' in navigator) { return; }
+
+		for (var gamepad of navigator.getGamepads()) {
+			if (gamepad && gamepad.axes.length == 4) {
+				handleGamepadAxis(0, gamepad.axes[0], gamepad.axes[1]);
+				handleGamepadAxis(2, gamepad.axes[2], gamepad.axes[3]);
+
+				// only check the first gamepad we find
+				break;
+			}
+		}
+	});
+
 	mechanics.startLevel();
 
 	canvasRenderer.run(mechanics);
