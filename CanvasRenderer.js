@@ -113,10 +113,9 @@ class CanvasRenderer {
 */
 	}
 
-	run(engine) {
-this.engine = engine;
+	run(mechanics) {
 		var loop = () => {
-			this.drawWorld(engine.world);
+			this.drawWorld(mechanics.engine.world);
 			requestAnimationFrame(loop);
 		}
 
