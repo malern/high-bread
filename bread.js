@@ -23,16 +23,16 @@ window.addEventListener('load', function() {
 		if (e.button == 0) {
 			// jump
 			Matter.Body.applyForce(
-				mechanics.playerBody,
-				mechanics.playerBody.position,
-				Matter.Vector.normalise(Matter.Vector.sub(clickPoint, mechanics.playerBody.position)),
+				mechanics.player.body,
+				mechanics.player.body.position,
+				Matter.Vector.normalise(Matter.Vector.sub(clickPoint, mechanics.player.body.position)),
 			);
 		}
 */
 		if ((e.button == 0) || (e.button == 2)) {
 			var id = e.button;
 
-			mechanics.grappleTo(id, clickPoint);
+			mechanics.player.grappleTo(id, clickPoint);
 		}
 	});
 
@@ -40,7 +40,7 @@ window.addEventListener('load', function() {
 		if ((e.button == 0) || (e.button == 2)) {
 			var id = e.button;
 
-			mechanics.grappleRemove(id);
+			mechanics.player.grappleRemove(id);
 		}
 	});
 
@@ -67,16 +67,16 @@ window.addEventListener('load', function() {
 
 	function handleGamepadAxis(grappleId, axesX, axesY) {
 		if (Matter.Vector.magnitude({x: axesX, y: axesY}) > 0.5) {
-			if (mechanics.grappleExists(grappleId)) { return; }
+			if (mechanics.player.grappleExists(grappleId)) { return; }
 			grappleControllerActivated[grappleId] = true;
-			mechanics.grappleTo(grappleId, {
-				x: mechanics.playerBody.position.x + axesX,
-				y: mechanics.playerBody.position.y + axesY,
+			mechanics.player.grappleTo(grappleId, {
+				x: mechanics.player.body.position.x + axesX,
+				y: mechanics.player.body.position.y + axesY,
 			});
 		}
 		else {
 			if (grappleControllerActivated[grappleId]) {
-				mechanics.grappleRemove(grappleId);
+				mechanics.player.grappleRemove(grappleId);
 				grappleControllerActivated[grappleId] = false;
 			}
 		}

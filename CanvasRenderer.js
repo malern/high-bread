@@ -42,22 +42,16 @@ class CanvasRenderer {
 
 
 
-	drawWorld(world) {
+	drawWorld(mechanics) {
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;
 		this.ctx.fillStyle = 'black';
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 
-		for (var body of world.bodies) {
-			if (body.isPlayer) {
-				var playerBody = body;
-			}
-		}
-
 		// center the camera on the player
-		var translateX = (this.canvas.width / 2) - (playerBody.position.x * this.scale);
-		var translateY = (this.canvas.height / 2) - (playerBody.position.y * this.scale);
+		var translateX = (this.canvas.width / 2) - (mechanics.player.body.position.x * this.scale);
+		var translateY = (this.canvas.height / 2) - (mechanics.player.body.position.y * this.scale);
 /*
 		// dont move too far outside the level area
 		if (translateX < 600) {
@@ -69,13 +63,13 @@ class CanvasRenderer {
 
 		if (this.breadImg.isLoaded) {
 			this.ctx.save();
-			this.ctx.translate(playerBody.position.x, playerBody.position.y);
-			this.ctx.rotate(playerBody.angle);
+			this.ctx.translate(mechanics.player.body.position.x, mechanics.player.body.position.y);
+			this.ctx.rotate(mechanics.player.body.angle);
 			this.ctx.drawImage(this.breadImg, -(this.breadImg.width / 2), -(this.breadImg.height / 2));
 			this.ctx.restore();
 		}
 
-		for (var body of world.bodies) {
+		for (var body of mechanics.engine.world.bodies) {
 			this.drawBody(body);
 		}
 
@@ -93,7 +87,7 @@ class CanvasRenderer {
 			}
 		}
 
-		for (var constraint of world.constraints) {
+		for (var constraint of mechanics.engine.world.constraints) {
 			this.drawConstraint(constraint);
 		}
 
@@ -122,7 +116,7 @@ class CanvasRenderer {
 	}
 
 	draw(mechanics) {
-		this.drawWorld(mechanics.engine.world);
+		this.drawWorld(mechanics);
 		this.drawInterface(mechanics);
 	}
 
