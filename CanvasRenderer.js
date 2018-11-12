@@ -113,9 +113,22 @@ class CanvasRenderer {
 */
 	}
 
+	drawInterface(mechanics) {
+		this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+		this.ctx.font = '30px Arial';
+		this.ctx.fillStyle = 'red';
+		var time = Math.round((Date.now() - mechanics.levelStartTime)/1000);
+		this.ctx.fillText('Time '+time, 10, 50);
+	}
+
+	draw(mechanics) {
+		this.drawWorld(mechanics.engine.world);
+		this.drawInterface(mechanics);
+	}
+
 	run(mechanics) {
 		var loop = () => {
-			this.drawWorld(mechanics.engine.world);
+			this.draw(mechanics);
 			requestAnimationFrame(loop);
 		}
 
