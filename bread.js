@@ -66,7 +66,7 @@ window.addEventListener('load', function() {
 	var grappleControllerActivated = [];
 
 	function handleGamepadAxis(grappleId, axesX, axesY) {
-		if (Math.abs(axesX) > 0.5 || Math.abs(axesY) > 0.5) {
+		if (Matter.Vector.magnitude({x: axesX, y: axesY}) > 0.5) {
 			if (mechanics.grappleExists(grappleId)) { return; }
 			grappleControllerActivated[grappleId] = true;
 			mechanics.grappleTo(grappleId, {
